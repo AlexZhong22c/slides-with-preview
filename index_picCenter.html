@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Preview Slideshow</title>
+	 <style type="text/css">
+	 	*{padding: 0;margin: 0;}
+	 	body{
+	 		padding: 50px 0;
+	 		background-color: #FFF;
+	 		font-size: 14px;
+	 		font-family:'Avenir Next';
+	 		color:#555;
+	 		-webkit-font-smoothing:antialiased;/*字体抗锯齿*/
+	 	}
+		
+		.slider .main .main-i,
+		.slider .main,
+	 	.slider{
+	 		width: 100%;
+	 		height: 400px;
+	 		position:relative;
+	 	}
+	 	.slider .main{
+	 		overflow: hidden;
+	 	}
+	 	.slider .main .main-i{
+
+	 	}
+	 	.slider .main .main-i img{
+	 		width: 100%;
+	 		position: absolute;
+	 		left: 0;
+	 		/*top:0;*/
+
+	 		z-index: 1;
+			/*improve:*/
+	 		top:50%;
+	 	}
+	 	.slider .main .main-i .caption{
+	 		position: absolute;
+	 		/*left: 50%;*/
+	 		/*一开始会有很奇怪的效果，就是因为我把right50%抄错成left50%*/
+	 		right:50%;
+	 		top:30%;
+	 		z-index: 9;
+	 		margin-right: 13%;
+	 	}
+ 	 	.slider .main .main-i .caption h2{
+	 		font-size: 40px;
+	 		line-height: 50px;
+	 		color: #B5B5B5;
+	 		text-align: right;
+	 	}
+ 	 	.slider .main .main-i .caption h3{
+	 		font-size: 70px;
+	 		line-height: 70px;
+	 		color: #000;
+	 		text-align: right;
+	 		font-family: 'Open Sans Condensed';
+
+	 	}
+	 	.slider .ctrl{
+	 		width: 100%;
+	 		height: 13px;
+	 		line-height: 13px;
+	 		text-align: center;/*非常重要，可以让控制按钮水平居中的*/
+	 		position: absolute;
+	 		left:0;/*其实left没有意义，因为它的宽度为100%*/
+	 		bottom: -13px;
+	 	}
+		.slider .ctrl .ctrl-i{
+			display: inline-block;/*其实它本来是a元素，所以要修改类型，这样，设置宽度和高度才会起作用*/
+	 		width: 150px;
+	 		height: 13px;
+	 		background-color: #666;
+	 		box-shadow: 0 1px 1px rgba(0,0,0,.3);
+	 		position: relative;/*能让img定位*/
+
+	 		margin-left: 1px;
+	 	}
+	 	.slider .ctrl .ctrl-i img{
+			width: 100%;
+			position: absolute;
+			left: 0;
+			bottom: 50px;
+			z-index: 1;
+
+			opacity: 0;
+			-webkit-transition:all .2s;
+	 	}
+
+
+	 	.slider .ctrl .ctrl-i:hover{
+			background-color: #F0F0F0;
+	 	}
+	 	.slider .ctrl .ctrl-i:hover img{
+			bottom: 13px;
+
+			-webkit-box-reflect:below 0px -webkit-gradient(
+				linear,
+				left top,
+				left bottom,
+				from(transparent),
+				color-stop(50%,transparent),
+				to(rgba(255,255,255,.3))
+				);
+			opacity: 1;
+	 	}
+	 	/*active 当前展现状态*/
+	 	.slider .ctrl .ctrl-i_active:hover,
+	 	.slider .ctrl .ctrl-i_active{
+			background-color:#000 ;
+	 	}
+	 	.slider .ctrl .ctrl-i_active:hover img{
+	 		opacity: 0;
+	 	}
+
+		/*幻灯片切换的样式*/
+  	 	.slider .main .main-i{
+			opacity: 0;
+			position: absolute;
+			right: 50%;
+			top:0;
+			-webkit-transition:all 0.5s;
+	 	}
+	 	.slider .main .main-i h2{
+			margin-right: 45px;
+	 	}
+	 	.slider .main .main-i h3{
+			margin-right: -45px;
+	 	}
+
+	 	.slider .main .main-i h2,
+	 	.slider .main .main-i h3{
+	 		-webkit-transition:all 1s .8s;
+
+	 		opacity: 0;
+	 	}
+	 	.slider .main .main-i_active{
+	 		right: 0;
+			opacity: 1;
+	 	}
+	 	.slider .main .main-i_active h2,
+	 	.slider .main .main-i_active h3{
+	 		margin-right: 0;
+
+	 		opacity: 1;
+	 	}
+
+
+	 </style>
+</head>
+<body>
+	<div class="slider">
+	<!-- 0.修改VIEW转换为模板Template（关键字替换），增加template id -->
+		<div class="main" id="template_main">
+			<div class="main-i" id="main_{{index}}">
+				<div class="caption" >
+					<h2>{{h2}}</h2>
+					<h3>{{h3}}</h3>
+				</div>
+				<img src="imgs/{{index}}.jpg" class="picture" />
+			</div>
+		</div>
+		<div class="ctrl" id="template_ctrl">
+			<a class="ctrl-i" id="ctrl_{{index}}" href="javascript:switchSliders({{index}});"><img src="imgs/{{index}}.jpg" /></a>
+			
+		</div>
+		<script type="text/javascript">
+			//1。数据定义（而在实际的生产环境中，应由后台给出）
+			var data=[
+				{img:1,h1:'Creative',h2:'DUET'},
+				{img:2,h1:'Friendly',h2:'DEVIL'},
+				{img:3,h1:'Tranquilent',h2:'COMPATRIOT'},
+				{img:4,h1:'Insecure',h2:'COMPATRIOT'},
+				{img:5,h1:'Loving',h2:'HUSSLER'},
+				{img:6,h1:'Passionate',h2:'SEEKER'},
+				{img:7,h1:'Crazy',h2:'FRIEND'}
+			];
+
+			//2.通用函数
+			var g = function(id){
+				if(id.substr(0,1)=='.'){
+					return document.getElementsByClassName(id.substr(1));
+				}
+				return document.getElementById(id);
+			}
+
+			//3.添加幻灯片的操作（所有幻灯片&对应的按钮）
+			function addSliders(){
+				//3.1获取模板
+				var tpl_main = g('template_main').innerHTML
+				.replace(/^\s*/,' ')
+				.replace(/\s*$/,' ');//把那堆标签的头尾的空白符都去掉
+
+				var tpl_ctrl = g('template_ctrl').innerHTML
+				.replace(/^\s*/,' ')
+				.replace(/\s*$/,' ');
+				//3.2定义最终输出 HTML 的变量
+				var out_main = [];
+				var out_ctrl = [];
+
+				//3.3遍历所有数据，构建最终的输出的HTML
+				for(i in data){
+					var _html_main = tpl_main
+					.replace(/{{index}}/g,data[i].img)
+					.replace(/{{h2}}/g,data[i].h1)
+					.replace(/{{h3}}/g,data[i].h2);
+
+					var _html_ctrl = tpl_ctrl
+					.replace(/{{index}}/g,data[i].img);
+
+					out_main.push(_html_main);
+					out_ctrl.push(_html_ctrl);
+				}
+
+				//3.4把html回写到对应的DOM里面
+				g('template_main').innerHTML = out_main.join(' ');
+				g('template_ctrl').innerHTML = out_ctrl.join(' ');
+			}
+
+			//5.幻灯片切换
+			function switchSliders(n){
+				//5.1获得要展现的幻灯片&控制按钮DOM
+				var main = g('main_'+n);
+				var ctrl = g('ctrl_'+n);
+
+				//5.2先把样式清掉
+				var clear_main = g('.main-i');
+				var clear_ctrl = g('.ctrl-i');
+				for(i=0;i<clear_ctrl.length;i++){
+					//这里不能用for in ，因为它不是真正意义上的数组 ？？
+
+					clear_main[i].className = clear_main[i].className.replace(' main-i_active','');
+					clear_ctrl[i].className = clear_ctrl[i].className.replace(' ctrl-i_active','');
+				}
+
+
+
+				main.className += ' main-i_active';
+				ctrl.className += ' ctrl-i_active';
+			}
+
+			// improve:
+			//6.动态调整图片的margin-top使其垂直居中
+			function movePictures(){
+				var pictures = g('.picture');
+				for(i=0;i<pictures.length;i++){
+					pictures[i].style.marginTop = (-1*pictures[i].clientHeight/2)+'px';
+				}
+
+			}
+
+
+			//4.定义何时处理幻灯片输出
+			window.onload = function(){
+				addSliders();
+				switchSliders(1);
+				// improve:直接加movePictures()在这里是不行的，因为它要的photo需要addSliders产生，而addSliders是动态添加图片的，有一个时间差
+				// movePictures();
+				setTimeout(function(){
+					movePictures();
+				},100);
+			}
+		</script>
+	</div>
+</body>
+</html>
